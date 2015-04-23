@@ -30,17 +30,16 @@ Your code will intercept the HTTP trafﬁc and determine the intended destinatio
 The proxy will then initiate its own TCP connection to the intended web server, 
 retrieve the ﬁles and send them back to the client" */
 
-int main(int argc, STRING *argv)
-{
-	unsigned short proxyPort;
-	unsigned int clientLen;
-	struct sockaddr_in proxyAddr, clientAddr;
-	verbose = FALSE;
+int main(int argc, STRING *argv){
+    unsigned short proxyPort;
+    unsigned int clientLen;
+    struct sockaddr_in proxyAddr, clientAddr;
+    verbose = FALSE;
 
-	proxyPort = scanargs(argc, argv);
+    proxyPort = scanargs(argc, argv);
 
 	/* start proxy */
-	if ((proxSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+    if ((proxSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
         die("Could not create TCP socket");
     }
@@ -74,13 +73,12 @@ int main(int argc, STRING *argv)
     }
 }
 
-void die(STRING s)
-{
+void die(STRING s){
     fprintf(stderr, "%s\n", s);
     exit(1);
 }
 
-int scanargs(int argc, STRING *argv) {
+int scanargs(int argc, STRING *argv){
     /* check each character of the option list for
        its meaning. */
 
@@ -119,7 +117,6 @@ int scanargs(int argc, STRING *argv) {
 
 
 char* forwardRequest(char* get, char* host){
-
     struct hostent * dest;
     char * destIP;
     char * recBuff;
@@ -177,7 +174,8 @@ void modResponse(char* buff){
             if(buff[i+11] == '0')
                 httpOK = TRUE;
 
-    if(httpOK){
+    if(httpOK)
+    {
         // adjust index until first '<' is found
         while(i < strlen(buff) && !pastHeader){
             if(buff[i] == '<')
@@ -198,7 +196,8 @@ void modResponse(char* buff){
                                }
 
             // Do the translation
-            if(foundGoogle){
+            if(foundGoogle)
+            {
                 // Swap the first and last letter of google
                 char temp = buff[i];
                 buff[i] = buff[i+5];
@@ -227,8 +226,8 @@ void modResponse(char* buff){
 }
 
 void runProxy(int clientSock){
-	/* receive packets from client, establish new connection and relay them to their destination, 
-	receive read/modify response packets, send them back to client? */
+    /* receive packets from client, establish new connection and relay them to their destination, 
+    receive read/modify response packets, send them back to client? */
 
     char * recBuff = malloc(MAXBUFF);
     char * host;
@@ -239,7 +238,6 @@ void runProxy(int clientSock){
     /* forward and receive messages to web server */
     while(msgSize > 0)
     {
-
         /* zero out buffers */
         memset(recBuff, 0, MAXBUFF);
 
@@ -257,16 +255,18 @@ void runProxy(int clientSock){
         if(command[0] == 'G')
             if(command[1] == 'E')
                 if(command[2] == 'T')
-                    if(command[3] == ' '){
+                    if(command[3] == ' ')
+                    {
                         g = TRUE;
-                }
+                    }
         if(command[0] == 'P')
             if(command[1] == 'O')
                 if(command[2] == 'S')
                     if(command[3] == 'T')
-                        if(command[4] == ' '){
+                        if(command[4] == ' ')
+                        {
                         p = TRUE;
-                    }            
+                        }            
 
         /* Found either a good request for GET or POST */
         if(g || p){
@@ -281,12 +281,14 @@ void runProxy(int clientSock){
                     if(recBuff[2] == 's')
                         if(recBuff[3] == 't')
                             if(recBuff[4] == ':')
-                                if(recBuff[5] == ' '){
+                                if(recBuff[5] == ' ')
+                                {
                                     h = TRUE;
                                 }  
 
             /* verified second line of request for "Host: " */
-            if(h){
+            if(h)
+            {
                 host = malloc(msgSize-8);
                 memcpy(host, recBuff+6, msgSize-8);
 
@@ -302,7 +304,8 @@ void runProxy(int clientSock){
                 }
                 
                 /* if verbose, log GET and host to screen */
-                if(verbose && g){
+                if(verbose && g)
+                {
                     fprintf(stderr, "%.*s at Host %s\n", (int)(strlen(command) - 3), command, host);
                 }
 
